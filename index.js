@@ -1,87 +1,76 @@
-//Dependencies
-const Axios = require("axios")
-const Fs = require("fs")
+"use strict";
 
-//Variables
-const Self_Args = process.argv.slice(2)
+// Dependencies
+const axios = require("axios")
+const fs = require("fs")
 
-var Self = {
-    grab_index: 0,
+// Variables
+const args = process.argv.slice(2)
+
+var openGenBot = {
+    grabIndex: 0,
     max: 0,
     results: []
 }
 
 //Functions
-async function Grab(account_type){
+async function grab(accountType){
     try{
-        if(Self.grab_index === Self.max){
-            console.log(`Finished grabbing ${Self.max} ${account_type} accounts.`)
-            console.log(`Saving the results to ${Self_Args[2]}`)
-            Fs.writeFileSync(Self_Args[2], Self.results.join("\n"), "utf8")
-            console.log(`Results successfully saved to ${Self_Args[2]}`)
-            process.exit()
+        if(openGenBot.grabIndex === openGenBot.max){
+            console.log(`Finished grabbing ${openGenBot.max} ${accountType} accounts.`)
+            console.log(`Saving the results to ${args[2]}`)
+            fs.writeFileSync(args[2], openGenBot.results.join("\n"), "utf8")
+            return console.log(`Results successfully saved to ${args[2]}`)
         }
     
-        console.log(`Grabbing ${account_type} account. Index: ${Self.grab_index}`)
+        console.log(`Grabbing ${accountType} accounts. Index: ${openGenBot.grabIndex}`)
     
-        var response = await Axios({
-            method: "GET",
-            url: `https://opengen.dpkghub.com/api/generate.php?type=${account_type}`
-        })
-    
+        var response = await axios(`https://opengen.dpkghub.com/api/generate.php?type=${accountType}`)
         response = response.data
     
-        if(Self.results.indexOf(response) !== -1){
-            console.log(`Unable to grab ${account_type} account, due to duplicate/error. Index: ${Self.grab_index}`)
+        if(openGenBot.results.indexOf(response) !== -1){
+            console.log(`Unable to grab ${accountType} account, due to duplicate/error. Index: ${openGenBot.grabIndex}`)
             console.log("Retrying...")
-            return Grab(account_type)
+            return grab(accountType)
         }
     
-        Self.results.push(response)
+        openGenBot.results.push(response)
     
-        Self.grab_index++
-        return Grab(account_type)
+        openGenBot.grabIndex++
+        grab(accountType)
     }catch{
-        console.log(`Unable to grab ${account_type} account, due to duplicate/error. Index: ${Self.grab_index}`)
-        console.log("Retrying...")
-        return Grab(account_type)
+        console.log(`Unable to grab ${accountType} account, due to duplicate/error. Index: ${openGenBot.grabIndex}`)
+        console.log("Retrying... Please wait for 2 seconds.")
+        setTimeout(()=>{
+            grab(accountType)
+        }, 2000)
     }
 }
 
 //Main
-if(!Self_Args.length){
-    console.log("Account types: Netflix, Spotify, NordVPN & Disney(Disney plus).")
-    console.log("node index.js <account_type> <amount> <output>")
-    process.exit()
-}
+if(!args.length) return console.log(`Account types: Netflix, Spotify, NordVPN & Disney(Disney plus).
+node index.js <accountType> <amount> <output>`)
 
-if(isNaN(Self_Args[1])){
-    console.log("amount is not a number.")
-    process.exit()
-}
+if(isNaN(args[1])) return console.log("amount is not a number.")
+if(!args[2]) return console.log("Invalid output.")
 
-if(!Self_Args[2]){
-    console.log("Invalid output.")
-    process.exit()
-}
+args[0] = args[0].toLowerCase()
+openGenBot.max = parseInt(args[1])
 
-Self_Args[0] = Self_Args[0].toLowerCase()
-Self.max = parseInt(Self_Args[1])
-
-switch(Self_Args[0]){
+switch(args[0]){
     case "netflix":
-        Grab("Netflix")
+        grab("Netflix")
         break
     case "spotify":
-        Grab("Spotify")
+        grab("Spotify")
         break
     case "nordvpn":
-        Grab("NordVPN")
+        grab("NordVPN")
         break
     case "disney":
-        Grab("Disney")
+        grab("Disney")
         break
     default:
-        console.log("Invalid account_type.")
+        console.log("Invalid accountType.")
         break
 }
