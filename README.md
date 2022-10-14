@@ -1,5 +1,5 @@
 # opengen-bot
-Generate Netflix, Spotify, NordVPN & Disney plus accounts.
+Generate Netflix, Spotify, NordVPN & Disney+ accounts.
 
 ## Installation
 Github:
@@ -14,11 +14,11 @@ npm i axios fs
 
 ## Usage
 ```
-node index.js <account_type> <amount> <output>
+node index.js <accountType> <amount> <outputFile>
 ```
 + accountType - The type of the account to generate.
 + amount - The amount of accounts to generate.
-+ output - The output of the generated accounts.
++ outputFile - The output file of the generated accounts.
 
 ## License
 MIT © I2rys

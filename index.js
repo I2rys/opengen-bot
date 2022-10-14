@@ -13,7 +13,7 @@ var openGenBot = {
     results: []
 }
 
-//Functions
+// Functions
 async function grab(accountType){
     try{
         if(openGenBot.grabIndex === openGenBot.max){
@@ -28,7 +28,7 @@ async function grab(accountType){
         var response = await axios(`https://opengen.dpkghub.com/api/generate.php?type=${accountType}`)
         response = response.data
     
-        if(openGenBot.results.indexOf(response) !== -1){
+        if(openGenBot.results.includes(response)){
             console.log(`Unable to grab ${accountType} account, due to duplicate/error. Index: ${openGenBot.grabIndex}`)
             console.log("Retrying...")
             return grab(accountType)
@@ -41,6 +41,7 @@ async function grab(accountType){
     }catch{
         console.log(`Unable to grab ${accountType} account, due to duplicate/error. Index: ${openGenBot.grabIndex}`)
         console.log("Retrying... Please wait for 2 seconds.")
+
         setTimeout(()=>{
             grab(accountType)
         }, 2000)
@@ -48,7 +49,7 @@ async function grab(accountType){
 }
 
 //Main
-if(!args.length) return console.log(`Account types: Netflix, Spotify, NordVPN & Disney(Disney plus).
+if(!args.length) return console.log(`Account Types: Netflix, Spotify, NordVPN & Disney(Disney plus).
 node index.js <accountType> <amount> <output>`)
 
 if(isNaN(args[1])) return console.log("amount is not a number.")
